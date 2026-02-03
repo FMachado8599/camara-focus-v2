@@ -1,108 +1,36 @@
-# Camara Focus
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Camara Focus is an **internal tools platform** developed for Camara TBWA.  
-It is initially designed for internal team usage and intentionally built to evolve into a **full SaaS product** in the future.
+## Getting Started
 
-The platform brings together QR generation and management, barcode tools, writing utilities, asset libraries (emojis, media), and supporting features focused on real-world workflows.
+First, run the development server:
 
----
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## 🧠 Project Vision
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-This project has three clear goals:
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-### 1. Present
-- Centralize internal tools in a single platform.
-- Improve productivity, visual consistency, and user experience.
-- Act as a functional extension of the company’s main website.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### 2. Mid-term
-- Private platform with authentication and role management.
-- A consistent and scalable Design System.
-- Clean, maintainable architecture.
+## Learn More
 
-### 3. Future
-- Evolve into a SaaS product.
-- Dynamic theming (white-label / company-level customization).
-- Technical and design scalability.
+To learn more about Next.js, take a look at the following resources:
 
----
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## 🧱 Tech Stack (in migration)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-The project is currently undergoing a **structured refactor** toward the following stack:
+## Deploy on Vercel
 
-- **Next.js** (App Router)
-- **TypeScript** (incremental adoption)
-- **shadcn/ui + Radix**
-- **Tailwind CSS**
-- **Firebase** (Auth, Firestore, Storage)
-- A **custom Design System**, built around tokens and theming
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-> The migration is performed incrementally, prioritizing stability and reuse of existing, proven logic.
-
----
-
-## 🎨 Design System
-
-A core pillar of this project is the development of a **complete Design System**, with the following principles:
-
-- Base components generated with `shadcn/ui`, adapted to the brand identity.
-- Design tokens for:
-  - colors
-  - typography
-  - spacing
-  - border radius
-  - component states
-- Exclusive use of relative units (`rem`, `em`).
-- Native **dark mode** support.
-- Prepared for **dynamic theming** (brand switching without modifying components).
-
-The Camara TBWA brand color is used as the **default theme**, but the system itself is brand-agnostic.
-
----
-
-## 🧭 Architecture
-
-The project follows an architecture designed for:
-
-- clear separation of concerns
-- scalability
-- long-term maintainability
-
-Key principles:
-- UI components decoupled from business logic.
-- Feature-based organization.
-- Centralized services and data fetching.
-- Reusable structural layouts.
-- Routing and view composition handled by Next.js.
-
----
-
-## 🚧 Current Status
-
-- Fully functional legacy version built with Vite + React.
-- Active migration to Next.js.
-- Design System, layout foundation, and project structure in progress.
-- Progressive refactor of components and logic.
-
----
-
-## 📌 Notes
-
-This repository is not a demo or a proof of concept.  
-It is a **product foundation**, intentionally built to grow, scale, and evolve.
-
-Technical decisions prioritize:
-- clarity
-- structure
-- consistency
-- long-term vision
-
----
-
-## ✍️ Author
-
-Developed by Facu  
-Camara TBWA
-
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

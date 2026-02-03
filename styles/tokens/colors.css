@@ -1,0 +1,33 @@
+:root {
+  /* Surfaces */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+
+  --surface: 0 0% 100%;
+  --surface-muted: 210 40% 96%;
+
+  /* Brand (Camara default) */
+  --primary: 48 100% 50%;        /* amarillo Camara */
+  --primary-foreground: 222 47% 11%;
+
+  /* UI */
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 48 100% 50%;
+
+  /* Feedback */
+  --danger: 0 84% 60%;
+  --warning: 38 92% 50%;
+  --success: 142 71% 45%;
+}
+
+.dark {
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
+
+  --surface: 222 47% 15%;
+  --surface-muted: 222 47% 20%;
+
+  --border: 217 33% 18%;
+  --input: 217 33% 18%;
+}
