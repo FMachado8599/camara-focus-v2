@@ -29,7 +29,6 @@ export function AppShell({ children }: AppShellProps) {
 
         <div className="flex-1 flex flex-col">
           <Header
-            collapsed={collapsed}
             onToggleSidebar={() => setCollapsed((v) => !v)}
           />
 
