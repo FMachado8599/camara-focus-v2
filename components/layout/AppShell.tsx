@@ -1,15 +1,16 @@
 "use client"
 
-import { ReactNode, useState } from "react"
+import { ReactNode } from "react"
 import { Sidebar } from "./Sidebar"
 import { Header } from "./Header"
+import { useSidebar } from "@/hooks/useSidebar"
 
 type AppShellProps = {
   children: ReactNode
 }
 
 export function AppShell({ children }: AppShellProps) {
-  const [collapsed, setCollapsed] = useState(false)
+  const { collapsed, toggle } = useSidebar()
 
   return (
     <div className="min-h-screen bg-background flex justify-center p-6">
@@ -29,7 +30,8 @@ export function AppShell({ children }: AppShellProps) {
 
         <div className="flex-1 flex flex-col">
           <Header
-            onToggleSidebar={() => setCollapsed((v) => !v)}
+            onToggleSidebar={toggle}
+            collapsed={collapsed}
           />
 
           <main className="flex-1 overflow-auto p-6">

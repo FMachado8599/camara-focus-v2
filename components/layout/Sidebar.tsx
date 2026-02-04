@@ -3,6 +3,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import clsx from "clsx"
 import { NAV_ITEMS } from "@/lib/sidebar/labels"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 type SidebarProps = {
   collapsed: boolean
@@ -20,31 +26,68 @@ export function Sidebar({ collapsed }: SidebarProps) {
       )}
     >
       <div className="h-full flex flex-col p-4">
-        {/* Logo / Title */}
         <div className="mb-6 text-sm font-semibold">
-          {collapsed ? "CF" : "Camara Focus"}
+          {collapsed ? "CF" : 'Camara\TBWA'}
         </div>
 
         {/* Navigation */}
         <nav className="flex flex-col gap-1 text-sm">
-          {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href
+          <TooltipProvider delayDuration={200}>
+            {NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.href
+              const Icon = item.icon
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={clsx(
-                  "rounded-md px-3 py-2 transition-colors",
-                  isActive
-                    ? "bg-primary text-foreground"
-                    : "hover:bg-surface-muted"
-                )}
-              >
-                {collapsed ? item.label.charAt(0) : item.label}
-              </Link>
-            )
-          })}
+              const link = (
+                <Link
+                  href={item.href}
+                  className={clsx(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors relative overflow-hidden",
+                    isActive
+                      ? "bg-primary/10 text-foreground"
+                      : "hover:bg-surface-muted",
+                    collapsed && "justify-center px-0"
+                  )}
+                >
+                  {isActive && (
+                    <>
+                      {/* Glow */}
+                      <span
+                        className="
+                          pointer-events-none
+                          absolute right-0 top-0 bottom-0
+                          w-8 bg-primary/60 blur-xl
+                        "
+                      />
+                      {/* Core */}
+                      <span
+                        className="
+                          pointer-events-none
+                          absolute right-0 top-1 bottom-1
+                          w-[3px] bg-primary rounded-r
+                        "
+                      />
+                    </>
+                  )}
+
+                  <Icon size={18} className="shrink-0" />
+                  {!collapsed && <span>{item.label}</span>}
+                </Link>
+              )
+
+              return collapsed ? (
+                <Tooltip key={item.href}>
+                  <TooltipTrigger asChild>
+                    {link}
+                  </TooltipTrigger>
+                  <TooltipContent side="right" align="center">
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <div key={item.href}>{link}</div>
+              )
+            })}
+          </TooltipProvider>
         </nav>
       </div>
     </aside>
