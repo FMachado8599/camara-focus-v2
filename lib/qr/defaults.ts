@@ -1,16 +1,24 @@
+//defaults.ts
+
 import { QROptions } from "./types"
 
 export const DEFAULT_QR_OPTIONS: QROptions = {
-  data: "https://example.com",
+  data: "https://www.camaratbwa.com.uy",
 
   foregroundColor: "#000000",
   backgroundColor: "#ffffff",
 
-  dotsType: "square",
-  cornersSquareType: "square",
-  cornersDotType: "square",
+  exportSize: 1000,
+  margin: 0,
 
-  exportSize: 500,
+  dotsType: "square", //square, dots, rounded, classy, classy-rounded, extra-rounded
+  cornersSquareType: "square", //square, dot, extra-rounded
+  cornersDotType: "square", // square, dot
+
+  logoImage: undefined,
+  logoSize: 0.4,
+
+  errorCorrectionLevel: "M",
 }
 
 

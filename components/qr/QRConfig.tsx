@@ -1,57 +1,97 @@
+// QRConfig.tsx
 "use client"
 
 import { QROptions } from "@/lib/qr/types"
-import { ColorPicker } from "@/components/ui/color-picker/ColorPicker"
+import { QR_CONFIG_SCHEMA } from "@/lib/qr/config"
+import { ColorPicker } from "@/components/ui/qr/color-picker/ColorPicker"
+import { OptionGroup } from "@/components/ui/qr/option-group/OptionGroup"
+import { CardOptionGroup } from "@/components/ui/qr/option-group/OptionGroupCard"
+import { ImageUpload } from "../ui/qr/image-upload/ImageUpload"
+import { Switch } from "@/components/ui/switch"
 
-type QRConfigProps = {
+interface Props {
   options: QROptions
-  onChange: (opts: QROptions) => void
+  onChange: (options: QROptions) => void
 }
 
-const SIZES = [150, 300, 500, 1000]
+export function QRConfig({ options, onChange }: Props) {
+  const updateOption = <K extends keyof QROptions>(
+    key: K,
+    value: QROptions[K]
+  ) => {
+    onChange({
+      ...options,
+      [key]: value,
+    })
+  }
 
-export function QRConfig({ options, onChange }: QRConfigProps) {
   return (
-    <div className="rounded-xl border p-6 space-y-4">
-        <h2 className="text-lg font-medium">
-            Opciones de exportación
-        </h2>
+    <div className="flex flex-col gap-8">
+      {QR_CONFIG_SCHEMA
+        .filter(
+            (control) =>
+            !control.showWhen || control.showWhen(options)
+        )
+      .map((control) => {
+        const value = options[control.key]
 
-        {/* Tamaño */}
-        <div>
-            <p className="text-sm mb-2">Tamaño (px)</p>
+        switch (control.type) {
+            case "color":
+                return (
+                <OptionGroup key={control.key} title={control.label}>
+                    <ColorPicker
+                    value={value as string}
+                    onChange={(v) =>
+                        updateOption(control.key, v as any)
+                    }
+                    />
+                </OptionGroup>
+                )
 
-            <div className="flex gap-2">
-            {SIZES.map((size) => (
-                <button
-                key={size}
-                className={`px-4 py-2 rounded border text-sm ${
-                    options.size === size
-                    ? "border-primary text-primary"
-                    : "opacity-60"
-                }`}
-                onClick={() =>
-                    onChange({
-                    ...options,
-                    size,
-                    })
-                }
+            case "options":
+                return (
+                <OptionGroup
+                    key={control.key}
+                    title={control.label}
+                    suffix={control.unit}
                 >
-                {size}
-                </button>
-            ))}
-            </div>
-        </div>
-        <ColorPicker
-            label="Color del QR"
-            value={options.foregroundColor}
-            onChange={(color) =>
-                onChange({
-                ...options,
-                foregroundColor: color,
-                })
-            }
-        />
+                    <CardOptionGroup
+                    value={value as any}
+                    options={control.options!}
+                    onChange={(v) =>
+                        updateOption(control.key, v as any)
+                    }
+                    />
+                </OptionGroup>
+                )
+            case "image":
+                return (
+                    <OptionGroup key={control.key} title={control.label}>
+                    <ImageUpload
+                        value={value as string | undefined}
+                        onChange={(v) =>
+                        updateOption(control.key, v as any)
+                        }
+                    />
+                    </OptionGroup>
+                )
+            case "toggle":
+            return (
+                <OptionGroup key={control.key} title={control.label}>
+                <div className="flex items-center justify-between gap-4">
+                    <Switch
+                    checked={Boolean(value)}
+                    onCheckedChange={(checked) =>
+                        updateOption(control.key, checked as any)
+                    }
+                    />
+                </div>
+                </OptionGroup>
+                )
+          default:
+            return null
+        }
+      })}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { QRPreview } from "@/components/qr/QRPreview"
 import { QRConfig } from "@/components/qr/QRConfig"
 import { DEFAULT_QR_OPTIONS } from "@/lib/qr/defaults"
@@ -11,14 +11,24 @@ export default function QRPage() {
     DEFAULT_QR_OPTIONS
   )
 
+  useEffect(() => {
+    if (options.logoImage && options.errorCorrectionLevel !== "H") {
+      setOptions((prev) => ({
+        ...prev,
+        errorCorrectionLevel: "H",
+      }))
+    }
+  }, [options.logoImage])
+
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <QRPreview
+        options={options}
+      />
       <QRConfig
         options={options}
         onChange={setOptions}
-      />
-      <QRPreview
-        options={options}
       />
     </div>
   )

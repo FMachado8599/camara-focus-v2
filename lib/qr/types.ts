@@ -1,3 +1,7 @@
+//types.ts
+
+export type QRErrorCorrectionLevel = "L" | "M" | "Q" | "H"
+
 export type QRDotType =
   | "square"
   | "dots"
@@ -20,6 +24,7 @@ export interface QROptions {
   backgroundColor: string
   foregroundColor: string
   exportSize: number
+  margin: number
 
   dotsType: QRDotType
   cornersSquareType: QRCornerSquareType
@@ -28,4 +33,7 @@ export interface QROptions {
   logoImage?: string
   logoSize?: number
   logoMargin?: number
+  hideBackgroundDots?: boolean
+
+  errorCorrectionLevel: QRErrorCorrectionLevel,
 }
