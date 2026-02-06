@@ -1,17 +1,36 @@
-"use client"
-
 import QRCodeStyling from "qr-code-styling"
 import { QROptions } from "./types"
 
-const PREVIEW_SIZE = 260
+type CreateQRParams = {
+  options: QROptions
+  size: number
+}
 
-export function createQR(options: QROptions) {
+export function createQR({ options, size }: CreateQRParams) {
   return new QRCodeStyling({
-    width: PREVIEW_SIZE,
-    height: PREVIEW_SIZE,
+    width: size,
+    height: size,
     data: options.data,
 
+    margin: options.margin,
+
+    qrOptions: {
+      errorCorrectionLevel: options.logoImage
+        ? "H"
+        : options.errorCorrectionLevel,
+    },
+
     image: options.logoImage,
+
+    imageOptions: options.logoImage
+      ? {
+          imageSize: options.logoSize ?? 0.4,
+          margin: options.logoMargin ?? 0,
+          hideBackgroundDots: options.hideBackgroundDots ?? true,
+        }
+      : {
+          hideBackgroundDots: false,
+        },
 
     dotsOptions: {
       type: options.dotsType,
@@ -19,7 +38,9 @@ export function createQR(options: QROptions) {
     },
 
     backgroundOptions: {
-      color: options.backgroundColor,
+      color: options.backgroundTransparent
+        ? "transparent"
+        : options.backgroundColor,
     },
 
     cornersSquareOptions: {
@@ -30,11 +51,6 @@ export function createQR(options: QROptions) {
     cornersDotOptions: {
       type: options.cornersDotType,
       color: options.foregroundColor,
-    },
-
-    imageOptions: {
-      crossOrigin: "anonymous",
-      margin: options.logoMargin ?? 8,
     },
   })
 }

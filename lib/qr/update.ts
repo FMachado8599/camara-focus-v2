@@ -27,7 +27,6 @@ export function updateQR(qr: QRCodeStyling, options: QROptions) {
           hideBackgroundDots: options.hideBackgroundDots ?? true,
         }
       : {
-          // 👇 importante: NO undefined
           hideBackgroundDots: false,
         },
 
@@ -36,16 +35,15 @@ export function updateQR(qr: QRCodeStyling, options: QROptions) {
       type: options.dotsType,
       color: options.foregroundColor,
     },
-
     backgroundOptions: {
-      color: options.backgroundColor,
+      color: options.backgroundTransparent
+        ? "transparent"
+        : options.backgroundColor,
     },
-
     cornersSquareOptions: {
       type: options.cornersSquareType,
       color: options.foregroundColor,
     },
-
     cornersDotOptions: {
       type: options.cornersDotType,
       color: options.foregroundColor,

@@ -19,9 +19,19 @@ export type QRCornerDotType =
   | "square"
   | "dot"
 
+export type QREditState = {
+  id: string
+  name: string
+  options: QROptions
+  link: QRLinkConfig
+}
+
+export type QRStatus = "active" | "paused"
+
 export interface QROptions {
   data: string
   backgroundColor: string
+  backgroundTransparent?: boolean
   foregroundColor: string
   exportSize: number
   margin: number
@@ -36,4 +46,12 @@ export interface QROptions {
   hideBackgroundDots?: boolean
 
   errorCorrectionLevel: QRErrorCorrectionLevel,
+}
+
+export interface QRLinkConfig {
+  brand: string
+  targetUrl: string
+  slug?: string
+  expiresAt?: string // ISO
+  status: QRStatus
 }

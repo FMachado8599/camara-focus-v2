@@ -1,20 +1,19 @@
-import QRCodeStyling from "qr-code-styling"
+import { createQR } from "./create"
 import { QROptions } from "./types"
 
-export function downloadQR(
+type ExportFormat = "png" | "svg"
+
+export function exportQR(
   options: QROptions,
-  format: "png" | "svg"
+  format: ExportFormat
 ) {
-  const qr = new QRCodeStyling({
-    width: options.exportSize,
-    height: options.exportSize,
-    data: options.data,
-    /* resto igual */
+  const qr = createQR({
+    options,
+    size: options.exportSize,
   })
 
   qr.download({
     extension: format,
-    name: "qr-code",
+    name: `qr-${format}`,
   })
 }
-

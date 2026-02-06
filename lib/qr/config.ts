@@ -94,6 +94,12 @@ export const QR_CONFIG_SCHEMA: ControlSchema[] = [
         key: "backgroundColor",
         label: "Fondo",
         type: "color",
+        showWhen: (opts) => !opts.backgroundTransparent,
+    },
+    {
+        key: "backgroundTransparent",
+        label: "Fondo transparente",
+        type: "toggle",
     },
     {
         key: "errorCorrectionLevel",
@@ -123,6 +129,19 @@ export const QR_CONFIG_SCHEMA: ControlSchema[] = [
             { label: "50", value: 0.5 },
         ],
         showWhen: (opts) => !!opts.logoImage,
+    },
+    {
+        key: "logoMargin",
+        label: "Margen del logo",
+        unit: "pt",
+        type: "options",
+        showWhen: (opts) => !!opts.logoImage,
+        options: [
+            { label: "0", value: 0 },
+            { label: "4", value: 4 },
+            { label: "8", value: 8 },
+            { label: "12", value: 12 },
+        ],
     },
     {
         key: "hideBackgroundDots",
