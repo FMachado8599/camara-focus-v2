@@ -2,6 +2,10 @@
 
 import { QREditState } from "@/lib/qr/types"
 import { FormField } from "./fields/FormField"
+import { useBrands } from "@/hooks/useBrands"
+import { ComboboxField } from "@/components/ui/combobox-field"
+import { createBrand } from "@/services/brands"
+import { normalizeSlug } from "@/lib/slug"
 
 type QRLinkFormProps = {
   qr: QREditState
@@ -9,6 +13,9 @@ type QRLinkFormProps = {
 }
 
 export default function QRLinkForm({ qr, onChange }: QRLinkFormProps) {
+
+  const { brands } = useBrands()
+
   const update = <K extends keyof QREditState>(
     key: K,
     value: QREditState[K]
@@ -47,16 +54,31 @@ export default function QRLinkForm({ qr, onChange }: QRLinkFormProps) {
         onChange={(v) => update("name", v)}
       />
 
-      <FormField
+      <ComboboxField
         label="Brand"
+        items={brands}
         value={qr.link.brand}
-        placeholder="renault"
-        onChange={(v) =>
-          updateLink("brand", normalizeSegment(v))
-        }
+        placeholder="Seleccionar o crear brand"
+        getLabel={(b) => b.name}
+        getValue={(b) => b.slug}
+        allowCreate
+        onCreate={async (input) => {
+          const slug = normalizeSlug(input)
+
+          const exists = brands.some(
+            (b) => b.slug === slug
+          )
+
+          if (!exists) {
+            await createBrand(input)
+          }
+
+          updateLink("brand", slug)
+        }}
+        onChange={(v) => updateLink("brand", v)}
         hint={
           qr.link.brand.trim() === ""
-            ? "El brand es necesario para generar el link."
+            ? "El brand es obligatorio."
             : undefined
         }
       />

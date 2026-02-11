@@ -3,7 +3,7 @@ import { QREditState } from "@/lib/qr/types"
 
 export function qrInitialState(): QREditState {
   return {
-    id: crypto.randomUUID(),
+    id: "",
     name: "",
     link: {
       ...DEFAULT_QR_LINK_CONFIG,

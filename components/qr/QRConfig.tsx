@@ -9,10 +9,11 @@ import { ImageUpload } from "@/components/ui/qr/image-upload/ImageUpload"
 import { Switch } from "@/components/ui/switch"
 import { AnimatedCollapse } from "@/components/ui/AnimatedCollapse"
 import { QREditState } from "@/lib/qr/types"
+import { saveQR } from "@/services/qr/saveQR"
 
 type Props = {
   qr: QREditState
-  onChange: (qr: QREditState) => void
+  onChange: React.Dispatch<React.SetStateAction<QREditState>>
 }
 
 export function QRConfig({ qr, onChange }: Props) {
@@ -22,14 +23,15 @@ export function QRConfig({ qr, onChange }: Props) {
     key: K,
     value: QROptions[K]
   ) => {
-    onChange({
-      ...qr,
+    onChange((prev) => ({
+      ...prev,
       options: {
-        ...qr.options,
+        ...prev.options,
         [key]: value,
       },
-    })
+    }))
   }
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -41,15 +43,29 @@ export function QRConfig({ qr, onChange }: Props) {
 
         if (control.key === "backgroundColor") {
           return (
-            <OptionGroup key="background" title="Fondo">
-              <div className="flex flex-col gap-3">
+            <OptionGroup
+              key="background"
+              title="Fondo"
+              rightSlot={
                 <Switch
-                  checked={options.backgroundTransparent}
-                  onCheckedChange={(v) =>
-                    updateOption("backgroundTransparent", v)
-                  }
+                  checked={!options.backgroundTransparent}
+                  onCheckedChange={(checked) => {
+                    onChange((prev) => ({
+                      ...prev,
+                      options: {
+                        ...prev.options,
+                        backgroundTransparent: !checked,
+                        backgroundColor: checked
+                          ? "#FFFFFF"
+                          : prev.options.backgroundColor,
+                      },
+                    }))
+                  }}
                 />
+              }
+            >
 
+              <div className="flex flex-col gap-3">
                 <AnimatedCollapse isOpen={!options.backgroundTransparent}>
                   <ColorPicker
                     value={options.backgroundColor}
@@ -65,6 +81,10 @@ export function QRConfig({ qr, onChange }: Props) {
 
         if (control.key === "backgroundTransparent") return null
 
+        if (control.showWhen && !control.showWhen(options)) {
+          return null
+        }
+
         switch (control.type) {
           case "color":
             return (
@@ -79,6 +99,13 @@ export function QRConfig({ qr, onChange }: Props) {
             )
 
           case "options":
+
+            const isErrorCorrection =
+              control.key === "errorCorrectionLevel"
+
+            const disabled =
+              isErrorCorrection && !!options.logoImage  
+
             return (
               <OptionGroup
                 key={control.key}
@@ -88,10 +115,18 @@ export function QRConfig({ qr, onChange }: Props) {
                 <CardOptionGroup
                   value={value as any}
                   options={control.options!}
-                  onChange={(v) =>
+                  disabled={disabled}
+                  onChange={(v) => {
+                    if (disabled) return
                     updateOption(control.key, v as any)
-                  }
+                  }}
                 />
+
+                {disabled && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Con logo, la corrección de errores se fija en Alta (H) para asegurar lectura.
+                  </p>
+                )}
               </OptionGroup>
             )
 
@@ -126,14 +161,22 @@ export function QRConfig({ qr, onChange }: Props) {
 
       <button
         className="mt-4 rounded-md bg-black px-4 py-2 text-white"
-        onClick={() => {
+        onClick={async () => {
           if (!qr.name.trim()) {
             alert("Poné un nombre al QR")
             return
           }
-
-          localStorage.setItem(`qr:${qr.id}`, JSON.stringify(qr))
-          alert("QR guardado")
+          if (!qr.link.brand?.trim()) {
+            alert("El brand es obligatorio.")
+            return
+          }
+          try {
+            await saveQR(qr)
+            alert("QR guardado en la nube ☁️")
+          } catch (err) {
+            console.error(err)
+            alert("Error guardando QR")
+          }
         }}
       >
         Guardar QR

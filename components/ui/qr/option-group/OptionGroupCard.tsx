@@ -10,6 +10,7 @@ interface CardOptionGroupProps<T extends string | number> {
   value: T
   options: CardOption<T>[]
   onChange: (value: T) => void
+  disabled?: boolean
 }
 
 export function CardOptionGroup<T extends string | number>({

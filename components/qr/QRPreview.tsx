@@ -35,11 +35,33 @@ export function QRPreview({ options, preview }: QRPreviewProps) {
 
   useEffect(() => {
     if (!qrRef.current) return
+    if (!options.logoImage) return
 
     qrRef.current.update({
-      data: options.data,
+      image: options.logoImage,
+      imageOptions: {
+        margin: options.logoMargin ?? 0,
+        imageSize: options.logoSize ?? 0.4,
+        hideBackgroundDots: options.hideBackgroundDots ?? false,
+      },
     })
-  }, [options.data])
+  }, [
+    options.logoImage,
+    options.logoSize,
+    options.logoMargin,
+    options.hideBackgroundDots,
+  ])
+
+  useEffect(() => {
+    if (!qrRef.current) return
+    if (options.logoImage) return
+
+    qrRef.current.update({
+      image: undefined,
+    })
+  }, [options.logoImage])
+
+
 
   useEffect(() => {
   if (!qrRef.current) return

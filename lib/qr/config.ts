@@ -94,13 +94,12 @@ export const QR_CONFIG_SCHEMA: ControlSchema[] = [
         key: "backgroundColor",
         label: "Fondo",
         type: "color",
-        showWhen: (opts) => !opts.backgroundTransparent,
     },
-    {
-        key: "backgroundTransparent",
-        label: "Fondo transparente",
-        type: "toggle",
-    },
+    // {
+    //     key: "backgroundTransparent",
+    //     label: "Fondo transparente",
+    //     type: "toggle",
+    // },
     {
         key: "errorCorrectionLevel",
         label: "Corrección de errores",

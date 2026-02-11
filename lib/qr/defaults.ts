@@ -24,6 +24,7 @@ export const DEFAULT_QR_OPTIONS: QROptions = {
   logoMargin: 0,
 
   errorCorrectionLevel: "M",
+  
 }
 
 // ------LINK------
@@ -35,6 +36,3 @@ export const DEFAULT_QR_LINK_CONFIG: QRLinkConfig = {
   expiresAt: undefined,
   status: "active",
 }
-
-
-

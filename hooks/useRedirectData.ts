@@ -19,17 +19,14 @@ export function useQRRedirectData(
 
   const resolvedSlug = qr.link.slug?.trim() || qr.id
 
-  const canGenerate =
-    qr.link.brand.trim() !== "" &&
-    isValidUrl(qr.link.targetUrl)
+  const hasBrand = qr.link.brand.trim() !== ""
 
-  const previewUrl = canGenerate
+  const previewUrl = hasBrand
     ? `https://camara-redirect.com/${qr.link.brand}/${resolvedSlug}`
-    : ""
+    : `https://camara-redirect.com/${resolvedSlug}`
 
-  const nextData = canGenerate
-    ? previewUrl
-    : PLACEHOLDER_QR_DATA
+  const nextData = previewUrl
+
 
   useEffect(() => {
     if (qr.options.data === nextData) return
@@ -44,7 +41,6 @@ export function useQRRedirectData(
   }, [nextData])
 
   return {
-    previewUrl,
-    canGenerate,
+    previewUrl
   }
 }
