@@ -11,13 +11,15 @@ import { downloadQR } from "@/lib/qr/download"
 import { createQR } from "@/lib/qr/create"
 import { updateQR } from "@/lib/qr/update"
 import { QRListItem } from "@/lib/qr/types"
+import { deleteQRFromFirestore } from "@/services/qr/delete"
 
 type Props = {
   qr: QRListItem
   view: "list" | "grid"
+  onDelete: (id: string) => void
 }
 
-export function QRCard({ qr, view }: Props) {
+export function QRCard({ qr, view, onDelete }: Props) {
   const brand = qr.link?.brand
   const slug = qr.link?.slugResolved
   const redirectUrl =
@@ -54,11 +56,22 @@ export function QRCard({ qr, view }: Props) {
       format
     )
   }
+  async function handleDelete(id: string) {
+    try {
+      await deleteQRFromFirestore(id)
+      onDelete(id)
+    } catch (error) {
+      console.error("Delete failed:", error)
+    }
+  }
+
+
+
 
 
 
   return (
-    <Card className="w-full">
+    <Card className="w-full p-0">
       <CardContent className="p-6">
         <div className="flex justify-between gap-6">
 
@@ -68,7 +81,7 @@ export function QRCard({ qr, view }: Props) {
             {/* QR */}
             <div
               ref={containerRef}
-              className="bg-white p-3 rounded-md"
+              className="bg-white p-3 flex justify-center items-center rounded-md"
             />
 
             {/* INFO */}
@@ -111,7 +124,7 @@ export function QRCard({ qr, view }: Props) {
           </div>
 
           {/* DERECHA */}
-          <div className="flex flex-col justify-between items-end">
+          <div className="flex flex-col justify-center items-center gap-5">
 
             <Button
             size="sm"
@@ -122,12 +135,27 @@ export function QRCard({ qr, view }: Props) {
             </Button>
 
             <div className="flex gap-3">
-              <Link href={`/qr/${qr.id}/edit`}>
+              <Link
+                href={`/qr/${qr.id}/edit`}
+                className="px-2 py-2 text-sm hover:text-white rounded-md hover:bg-black transition"
+              >
                 <Pencil className="w-4 h-4 cursor-pointer" />
               </Link>
 
-              <Trash className="w-4 h-4 cursor-pointer" />
-              <Copy className="w-4 h-4 cursor-pointer" />
+              <button
+                onClick={() => handleDelete(qr.id)}
+                className="px-2 py-2 text-sm hover:text-white rounded-md hover:bg-red-600 transition"
+              >
+                <Trash className="w-4 h-4 cursor-pointer" />
+              </button>
+              <button
+                onClick={() => handleDelete(qr.id)}
+                className="px-2 py-2 text-sm hover:text-white rounded-md hover:bg-black transition"
+              >
+                <Copy className="w-4 h-4 cursor-pointer" />
+              </button>
+
+              
             </div>
           </div>
 

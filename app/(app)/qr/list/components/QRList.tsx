@@ -7,9 +7,10 @@ import { QRListItem } from "@/lib/qr/types"
 
 type Props = {
   qrs: QRListItem[]
+  onDelete: (id: string) => void
 }
 
-export function QRList({ qrs }: Props) {
+export function QRList({ qrs, onDelete }: Props) {
   const [view, setView] = useState<"list" | "grid">("list")
 
   return (
@@ -33,6 +34,7 @@ export function QRList({ qrs }: Props) {
             key={qr.id}
             qr={qr}
             view={view}
+            onDelete={onDelete}
           />
         ))}
       </div>

@@ -14,6 +14,10 @@ import { mapDocToQRListItem } from "@/lib/qr/mapping"
 export default function QRListPage() {
   const [qrs, setQrs] = useState<QRListItem[]>([])
 
+  function handleDelete(id: string) {
+    setQrs(prev => prev.filter(qr => qr.id !== id))
+  }
+
   useEffect(() => {
     async function fetchQrs() {
       const snap = await getDocs(collection(db, "qrs"))
@@ -27,7 +31,8 @@ export default function QRListPage() {
   return (
     <div className="space-y-8">
       <QRListHeader />
-      <QRList qrs={qrs} />
+      <QRList qrs={qrs} onDelete={handleDelete}/>
+      
     </div>
   )
 }
