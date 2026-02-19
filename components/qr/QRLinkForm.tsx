@@ -1,3 +1,5 @@
+//QRLinkForm.tsx
+
 "use client"
 
 import { QREditState } from "@/lib/qr/types"
@@ -6,6 +8,8 @@ import { useBrands } from "@/hooks/useBrands"
 import { ComboboxField } from "@/components/ui/combobox-field"
 import { createBrand } from "@/services/brands"
 import { normalizeSlug } from "@/lib/slug"
+import { uploadLogo } from "@/lib/uploadLogo"
+
 
 type QRLinkFormProps = {
   qr: QREditState
@@ -44,6 +48,19 @@ export default function QRLinkForm({ qr, onChange }: QRLinkFormProps) {
       return false
     }
   }
+
+  const handleLogoUpload = async (file: File) => {
+    const url = await uploadLogo(file)
+
+    onChange({
+      ...qr,
+      options: {
+        ...qr.options,
+        logoImage: url,
+      },
+    })
+  }
+
 
   return (
     <div className="flex flex-col gap-6">

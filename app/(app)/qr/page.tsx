@@ -3,5 +3,5 @@
 import { redirect } from "next/navigation"
 
 export default function QRIndexPage() {
-  redirect("/qr/create")
+  redirect("/qr/list")
 }

@@ -7,7 +7,7 @@ import QRCodeStyling from "qr-code-styling"
 import { QROptions } from "@/lib/qr/types"
 import { createQR } from "@/lib/qr/create"
 import { updateQR } from "@/lib/qr/update"
-import { exportQR } from "@/lib/qr/export"
+import { downloadQR } from "@/lib/qr/download"
 
 type QRPreviewProps = {
   options: QROptions
@@ -80,7 +80,7 @@ export function QRPreview({ options, preview }: QRPreviewProps) {
 
 
   const handleDownload = (format: "png" | "svg") => {
-    exportQR(options, format)
+    downloadQR(options, format)
   }
 
   const handleCopy = async () => {

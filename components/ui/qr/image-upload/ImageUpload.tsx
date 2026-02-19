@@ -3,6 +3,7 @@
 import { ImageUp, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import { uploadLogo } from "@/lib/uploadLogo"
 
 interface ImageUploadProps {
   value?: string
@@ -16,11 +17,25 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
     useEffect(() => {
         setPreview(value ?? null)
     }, [value])
+    
+    useEffect(() => {
+      return () => {
+        if (preview?.startsWith("blob:")) {
+          URL.revokeObjectURL(preview)
+        }
+      }
+    }, [preview])
 
-    const handleFile = (file: File) => {
-        const objectUrl = URL.createObjectURL(file)
-        setPreview(objectUrl)
-        onChange(objectUrl)
+    const handleFile = async (file: File) => {
+      const localPreview = URL.createObjectURL(file)
+      setPreview(localPreview)
+
+      try {
+        const url = await uploadLogo(file)
+        onChange(url) // guardamos URL real de Firebase
+      } catch (err) {
+        console.error("Error subiendo logo", err)
+      }
     }
     const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault()

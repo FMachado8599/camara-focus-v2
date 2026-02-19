@@ -28,6 +28,19 @@ export type QREditState = {
 
 export type QRStatus = "active" | "paused"
 
+export type QRListItem = {
+  id: string
+  name: string
+  options: QROptions
+  link: {
+    brand: string
+    slugResolved: string
+    targetUrl: string
+  }
+  updatedAt: Date | null
+  createdAt: Date | null
+}
+
 export interface QROptions {
   data: string
   backgroundColor: string
@@ -55,3 +68,4 @@ export interface QRLinkConfig {
   expiresAt?: string // ISO
   status: QRStatus
 }
+

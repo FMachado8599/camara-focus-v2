@@ -1,3 +1,5 @@
+//create.ts
+
 import QRCodeStyling from "qr-code-styling"
 import { QROptions } from "./types"
 

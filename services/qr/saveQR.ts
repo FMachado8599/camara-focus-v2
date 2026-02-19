@@ -58,7 +58,7 @@ export async function saveQR(qr: QREditState) {
         createdAt: serverTimestamp(),
       })
     }
-    const cleanData = removeUndefined({
+    const baseData = {
       name: qr.name,
       link: {
         ...qr.link,
@@ -67,8 +67,17 @@ export async function saveQR(qr: QREditState) {
       },
       options: qr.options,
       updatedAt: serverTimestamp(),
-      createdAt: serverTimestamp(),
-    })
+    }
+
+    const cleanData = removeUndefined(
+      existingQrSnap.exists()
+        ? baseData // ✏️ update → NO tocar createdAt
+        : {
+            ...baseData,
+            createdAt: serverTimestamp(), // 🆕 solo si es nuevo
+          }
+    )
+
 
     tx.set(qrRef, cleanData, { merge: true })
 
