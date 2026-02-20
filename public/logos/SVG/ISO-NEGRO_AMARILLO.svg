@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ffcd00;
+      }
+    </style>
+  </defs>
+  <g id="FONDO">
+    <rect width="1080" height="1080"/>
+  </g>
+  <g id="ISO">
+    <polygon class="cls-1" points="346.76 206.25 593.07 873.75 733.24 873.75 486.93 206.25 346.76 206.25"/>
+  </g>
+</svg>
