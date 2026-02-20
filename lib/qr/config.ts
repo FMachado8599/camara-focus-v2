@@ -2,16 +2,6 @@
 
 import { QROptions } from "./types"
 
-export interface ControlSchema<T = any> {
-  key: keyof QROptions
-  label: string
-  type: ControlType
-  unit?: string
-  options?: { label: string; value: T }[]
-  showWhen?: (options: QROptions) => boolean
-}
-
-
 export type ControlType =
   | "color"
   | "options"

@@ -46,8 +46,6 @@ export interface QROptions {
   backgroundColor: string
   backgroundTransparent?: boolean
   foregroundColor: string
-  exportSize: number
-  margin: number
 
   dotsType: QRDotType
   cornersSquareType: QRCornerSquareType
@@ -59,6 +57,12 @@ export interface QROptions {
   hideBackgroundDots?: boolean
 
   errorCorrectionLevel: QRErrorCorrectionLevel,
+}
+
+export type QRExportOptions = {
+  size: number
+  margin: number
+  format: "png" | "jpeg" | "svg"
 }
 
 export interface QRLinkConfig {

@@ -11,6 +11,7 @@ const baseUrl =
 const nombreApp = "Cámara Focus"
 const descriptionApp = "Herramienta de Cámara para una mejora en el flujo de trabajo"
 const mainImg = "/logos/WEBP/ISO-AMARILLO_NEGRO.webp"
+const portraitImg = "/logos/WEBP/portada_web-metadata-negro_blanco.webp"
 
 export const seoConfig: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -42,7 +43,7 @@ export const seoConfig: Metadata = {
     description: descriptionApp,
     images: [
       {
-        url: mainImg, // 1200x630 recomendado
+        url: portraitImg, // 1200x630 recomendado
         width: 1200,
         height: 630,
         alt: "Logo de Cámara TBWA",

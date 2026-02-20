@@ -49,19 +49,6 @@ export default function QRLinkForm({ qr, onChange }: QRLinkFormProps) {
     }
   }
 
-  const handleLogoUpload = async (file: File) => {
-    const url = await uploadLogo(file)
-
-    onChange({
-      ...qr,
-      options: {
-        ...qr.options,
-        logoImage: url,
-      },
-    })
-  }
-
-
   return (
     <div className="flex flex-col gap-6">
       <FormField

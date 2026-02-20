@@ -12,9 +12,6 @@ export const DEFAULT_QR_OPTIONS: QROptions = {
   backgroundColor: "#ffffff",
   backgroundTransparent: false,
 
-  exportSize: 1000,
-  margin: 0,
-
   dotsType: "square", //square, dots, rounded, classy, classy-rounded, extra-rounded
   cornersSquareType: "square", //square, dot, extra-rounded
   cornersDotType: "square", // square, dot
@@ -24,7 +21,7 @@ export const DEFAULT_QR_OPTIONS: QROptions = {
   logoMargin: 0,
 
   errorCorrectionLevel: "M",
-  
+  hideBackgroundDots: true
 }
 
 // ------LINK------

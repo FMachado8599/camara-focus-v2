@@ -6,15 +6,16 @@ import { QROptions } from "./types"
 type CreateQRParams = {
   options: QROptions
   size: number
+  margin: number
 }
 
-export function createQR({ options, size }: CreateQRParams) {
+export function createQR({ options, size, margin }: CreateQRParams) {
   return new QRCodeStyling({
     width: size,
     height: size,
     data: options.data,
 
-    margin: options.margin,
+    margin: margin,
 
     qrOptions: {
       errorCorrectionLevel: options.logoImage
@@ -28,7 +29,7 @@ export function createQR({ options, size }: CreateQRParams) {
       ? {
           imageSize: options.logoSize ?? 0.4,
           margin: options.logoMargin ?? 0,
-          hideBackgroundDots: options.hideBackgroundDots ?? true,
+          hideBackgroundDots: options.hideBackgroundDots
         }
       : {
           hideBackgroundDots: false,
