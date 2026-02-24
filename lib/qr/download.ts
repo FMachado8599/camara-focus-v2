@@ -1,4 +1,5 @@
-import QRCodeStyling from "qr-code-styling"
+//download.ts
+
 import { QROptions, QRExportOptions } from "./types"
 import { createQR } from "./create"
 
@@ -12,12 +13,8 @@ export async function downloadQR(
     margin: exportOptions.margin,
   })
 
-  qr.update({
-    margin: exportOptions.margin
-  })
-
   qr.download({
     extension: exportOptions.format,
-    name: "qr"
+    name: "qr",
   })
 }

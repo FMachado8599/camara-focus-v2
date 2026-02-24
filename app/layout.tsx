@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/AppShell"
 import "./globals.css";
+import { Toaster } from "sonner"
 
 const isDev = process.env.NODE_ENV === "development"
 const geistSans = Geist({
@@ -33,6 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppShell>{children}</AppShell>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

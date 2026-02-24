@@ -7,7 +7,6 @@ export function updateQR(qr: QRCodeStyling, options: QROptions) {
 
   const hasLogo = !!options.logoImage
 
-
   qr.update({
     data: options.data,
 
@@ -16,8 +15,6 @@ export function updateQR(qr: QRCodeStyling, options: QROptions) {
       ? "H"
       : options.errorCorrectionLevel,
   },
-
-    margin: options.margin,
 
     image: options.logoImage,
     imageOptions: options.logoImage

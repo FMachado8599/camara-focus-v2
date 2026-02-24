@@ -40,7 +40,6 @@ export function QRPreview({ options, preview }: QRPreviewProps) {
     qrRef.current.update({
       image: options.logoImage,
       imageOptions: {
-        margin: options.logoMargin ?? 0,
         imageSize: options.logoSize ?? 0.4,
         hideBackgroundDots: options.hideBackgroundDots ?? false,
       },
@@ -51,7 +50,6 @@ export function QRPreview({ options, preview }: QRPreviewProps) {
     options.logoMargin,
     options.hideBackgroundDots,
   ])
-
   useEffect(() => {
     if (!qrRef.current) return
     if (options.logoImage) return
@@ -80,7 +78,11 @@ export function QRPreview({ options, preview }: QRPreviewProps) {
 
 
   const handleDownload = (format: "png" | "svg") => {
-    downloadQR(options, format)
+    downloadQR(options, {
+      size: 1000,   // o el tamaño real de export
+      margin: 0,    // o el que quieras usar
+      format,
+    })
   }
 
   const handleCopy = async () => {

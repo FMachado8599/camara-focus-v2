@@ -6,10 +6,10 @@ import { QROptions } from "./types"
 type CreateQRParams = {
   options: QROptions
   size: number
-  margin: number
+  margin?: number
 }
 
-export function createQR({ options, size, margin }: CreateQRParams) {
+export function createQR({ options, size, margin = 0 }: CreateQRParams) {
   return new QRCodeStyling({
     width: size,
     height: size,
