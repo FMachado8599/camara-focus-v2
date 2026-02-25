@@ -12,7 +12,7 @@ export function BarcodeListHeader() {
       </h1>
 
       <Button asChild>
-        <Link href="/qr/create">
+        <Link href="/barcode/create">
           <Plus className="w-4 h-4 mr-2" />
           Nuevo <Barcode/>
         </Link>
