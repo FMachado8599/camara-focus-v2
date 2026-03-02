@@ -7,6 +7,7 @@ import { SearchBar } from "./components/search-bar"
 import { FavoritesRow } from "./components/favorites"
 import { CategoryList } from "./components/category-list"
 import EmojiGrid from "./components/emoji-grid"
+import { copyOrDownloadEmoji } from "@/lib/emojis/copy_or_download"
 import {
   categories,
   type Emoji,
@@ -101,9 +102,17 @@ export default function EmojiLibrary() {
   }, [])
 
   const handleEmojiClick = useCallback((emoji: Emoji) => {
-    navigator.clipboard.writeText(emoji.emoji).catch(() => {
-      // Fallback: do nothing if clipboard API unavailable
-    })
+    try {
+      const res = await copyOrDownloadEmoji(emoji.codepoint)
+
+      if (res.mode === "clipboard") {
+        showToast("Emoji copiado al portapapeles", "success")
+      } else {
+        showToast("Tu navegador no permite copiar imágenes. Descargamos el emoji.", "success")
+      }
+    } catch {
+      showToast("No se pudo copiar ni descargar el emoji", "error")
+    }
     setLastCopied(emoji.emoji)
     setTimeout(() => setLastCopied(null), 2000)
   }, [])
