@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator"
 import { Copy, Smile } from "lucide-react"
 import { fetchEmojis } from "@/lib/emojis/fetch"
 import { getEmojiPlaceholderUrl } from "@/lib/emojis/placeholders"
+import { useToast } from "@/context/ToastContext" 
 
 export default function EmojiLibrary() {
   const [query, setQuery] = useState("")
@@ -25,6 +26,7 @@ export default function EmojiLibrary() {
   const [isLoading, setIsLoading] = useState(true)
   const [lastCopied, setLastCopied] = useState<string | null>(null)
   const [emojis, setEmojis] = useState<Emoji[]>([])
+  const {success, error } = useToast()
 
   const loadEmojis = useCallback(async () => {
     try {
@@ -101,17 +103,17 @@ export default function EmojiLibrary() {
     })
   }, [])
 
-  const handleEmojiClick = useCallback((emoji: Emoji) => {
+  const handleEmojiClick = useCallback(async (emoji: Emoji) => {
     try {
       const res = await copyOrDownloadEmoji(emoji.codepoint)
 
       if (res.mode === "clipboard") {
-        showToast("Emoji copiado al portapapeles", "success")
+        success("Emoji copiado al portapapeles")
       } else {
-        showToast("Tu navegador no permite copiar imágenes. Descargamos el emoji.", "success")
+        success("Tu navegador no permite copiar imágenes. Descargamos el emoji.")
       }
     } catch {
-      showToast("No se pudo copiar ni descargar el emoji", "error")
+      error("No se pudo copiar ni descargar el emoji", "error")
     }
     setLastCopied(emoji.emoji)
     setTimeout(() => setLastCopied(null), 2000)

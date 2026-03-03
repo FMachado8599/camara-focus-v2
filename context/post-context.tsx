@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
-import type { Post, Comment, ReferenceLink, PostType, Platform } from "./types"
+import type { Post, Comment, ReferenceLink, PostType, Platform } from "@/lib/planis/types"
 import { createEmptyPost } from "@/lib/planis/types"
 
 interface PostContextValue {
