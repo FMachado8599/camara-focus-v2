@@ -41,3 +41,4 @@ yarn-error.log*
 next-env.d.ts
 /scripts/serviceAccountKey.json
 /scripts/apple_emojis_png
+/scripts/apple_emojis_webp

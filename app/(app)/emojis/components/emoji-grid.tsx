@@ -5,6 +5,7 @@ import { EmojiItemCard } from "./emoji-item"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SearchX, Loader2 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useEffect, useRef } from "react"
 
 interface EmojiGridProps {
   emojis: Emoji[]
@@ -12,6 +13,8 @@ interface EmojiGridProps {
   isLoading: boolean
   onToggleFavorite: (emoji: Emoji) => void
   onEmojiClick: (emoji: Emoji) => void
+  loadEmojis: () => void
+  hasMore: boolean
 }
 
 function LoadingState() {
@@ -49,7 +52,10 @@ export default function EmojiGrid({
   isLoading,
   onToggleFavorite,
   onEmojiClick,
+  loadEmojis,
+  hasMore
 }: EmojiGridProps) {
+
   if (isLoading) {
     return (
       <div className="flex-1 p-4">
@@ -79,7 +85,7 @@ export default function EmojiGrid({
   }, {})
 
   return (
-    <ScrollArea className="flex-1">
+    <ScrollArea className="flex-1 min-h-0">
       <div className="flex flex-col gap-6 p-4">
         {Object.entries(grouped).map(([key, groupEmojis]) => (
           <section key={key}>
@@ -87,18 +93,38 @@ export default function EmojiGrid({
               {groupEmojis[0].subgroup}
             </h3>
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
-              {groupEmojis.map((emoji) => (
-                <EmojiItemCard
-                  key={emoji.name}
-                  emoji={emoji}
-                  isFavorite={favorites.has(emoji.name)}
-                  onToggleFavorite={onToggleFavorite}
-                  onEmojiClick={onEmojiClick}
-                />
-              ))}
+              {groupEmojis.map((emoji) => {
+                const isFavorite = favorites.has(emoji.codepoint)
+
+                return (
+                  <EmojiItemCard
+                    key={emoji.name}
+                    emoji={emoji}
+                    isFavorite={isFavorite}
+                    onToggleFavorite={onToggleFavorite}
+                    onEmojiClick={onEmojiClick}
+                  />
+                )
+              })}
             </div>
           </section>
         ))}
+        {hasMore && (
+          <div className="flex justify-center py-6">
+                <button
+                  onClick={() => loadEmojis()}
+                  disabled={isLoading}
+                  className="rounded-lg bg-secondary px-4 py-2 text-sm hover:bg-secondary/80 disabled:opacity-50"
+                >
+                    {isLoading ? "Loading..." : "Load 100 more"}
+                  </button>
+                </div>
+        )}
+        {!hasMore && (
+          <div className="text-center py-6 text-xs text-muted-foreground">
+            No more emojis
+          </div>
+        )}
       </div>
     </ScrollArea>
   )

@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { SearchBar } from "./components/search-bar"
 import { FavoritesRow } from "./components/favorites"
 import { CategoryList } from "./components/category-list"
@@ -22,61 +22,64 @@ export default function EmojiLibrary() {
   const [query, setQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<string | null>("people_and_body")
   const [activeSubgroup, setActiveSubgroup] = useState<string | null>(null)
-  const [favoriteNames, setFavoriteNames] = useState<Set<string>>(new Set())
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set())
   const [isLoading, setIsLoading] = useState(true)
   const [lastCopied, setLastCopied] = useState<string | null>(null)
   const [emojis, setEmojis] = useState<Emoji[]>([])
   const {success, error } = useToast()
+  const [allEmojis, setAllEmojis] = useState<Emoji[]>([])
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(true)
+  const [totalCount, setTotalCount] = useState(0)
+  const cursorRef = useRef<string | null>(null)
 
-  const loadEmojis = useCallback(async () => {
+  useEffect(() => {
+    const initLoad = async () => {
+      setEmojis([]);
+      setCursor(null);
+      cursorRef.current = null
+      setHasMore(true);
+      await loadEmojis(true);
+    }
+    initLoad();
+  }, [activeCategory, query]);
+
+  const loadEmojis = useCallback(async (reset = false) => {
+    if (!reset && isLoading) return
+    if (!hasMore && !reset) return
+
+    setIsLoading(true)
+
     try {
-      setIsLoading(true)
-
-    const data = await fetchEmojis({
-      category: activeCategory,
-      search: query,
-    })
-
-    const filtered = await Promise.all(
-      data.map(async (emoji) => {
-        try {
-          const imgUrl = getEmojiPlaceholderUrl(emoji.codepoint)
-          const res = await fetch(imgUrl, { method: "HEAD" }) // solo revisa si existe
-          if (!res.ok) throw new Error("No existe")
-          return emoji
-        } catch {
-          return null // no existe, lo descartamos
-        }
+      const response = await fetchEmojis({
+        category: activeCategory,
+        search: query,
+        cursor: reset ? null : cursorRef.current, // <-- aquí usamos la ref
+        limit: 100,
       })
-    )
 
-    setEmojis(filtered.filter(Boolean) as Emoji[])
-    } catch (error) {
-      console.error("Error fetching emojis:", error)
-      setEmojis([])
+      const { emojis: newEmojis, nextCursor, hasMore: more } = response
+
+      setEmojis(prev => reset ? newEmojis : [...prev, ...newEmojis])
+      setAllEmojis(prev => reset ? newEmojis : [...prev, ...newEmojis])
+
+      cursorRef.current = nextCursor // <-- actualizamos la ref
+      setHasMore(more)
+    } catch (err) {
+      console.error(err)
     } finally {
       setIsLoading(false)
     }
-  }, [activeCategory, query])
-  
-  useEffect(() => {
-    loadEmojis()
-  }, [loadEmojis])
-
-  useEffect(() => {
-    console.log("Categoria activa:", activeCategory)
-  }, [activeCategory])
+  }, [activeCategory, query, isLoading, hasMore])
 
   // Load favorites from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem("emoji-favorites")
       if (stored) {
-        setFavoriteNames(new Set(JSON.parse(stored)))
+        setFavoriteIds(new Set(JSON.parse(stored)))
       }
-    } catch {
-      // Silently handle storage errors
-    }
+    } catch {}
   }, [])
 
   // Save favorites to localStorage
@@ -84,21 +87,21 @@ export default function EmojiLibrary() {
     try {
       localStorage.setItem(
         "emoji-favorites",
-        JSON.stringify(Array.from(favoriteNames))
+        JSON.stringify(Array.from(favoriteIds))
       )
-    } catch {
-      // Silently handle storage errors
-    }
-  }, [favoriteNames])
+    } catch {}
+  }, [favoriteIds])
 
   const toggleFavorite = useCallback((emoji: Emoji) => {
-    setFavoriteNames((prev) => {
+    setFavoriteIds((prev) => {
       const next = new Set(prev)
-      if (next.has(emoji.name)) {
-        next.delete(emoji.name)
+
+      if (next.has(emoji.codepoint)) {
+        next.delete(emoji.codepoint)
       } else {
-        next.add(emoji.name)
+        next.add(emoji.codepoint)
       }
+
       return next
     })
   }, [])
@@ -121,6 +124,9 @@ export default function EmojiLibrary() {
 
   const activeCount = emojis.length
   const activeCategoryObj = categories.find((c) => c.id === activeCategory)
+  const favoriteEmojis = allEmojis.filter((emoji) =>
+    favoriteIds.has(emoji.codepoint)
+  )
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
@@ -164,16 +170,20 @@ export default function EmojiLibrary() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex flex-1 flex-col overflow-hidden">
+        <main className="flex flex-1 flex-col min-h-0">
           {/* Search + Favorites */}
-          {/* <div className="flex flex-col gap-4 border-b border-border px-5 py-4">
+          <div className="flex flex-col gap-4 border-b border-border px-5 py-4">
             <SearchBar query={query} onQueryChange={setQuery} />
-            <FavoritesRow
-              favorites={favoriteEmojis}
-              onToggleFavorite={toggleFavorite}
-              onEmojiClick={handleEmojiClick}
-            />
-          </div> */}
+            {favoriteEmojis.length > 0 && (
+              <div className="border-b border-border px-5 py-4">
+                <FavoritesRow
+                  favorites={favoriteEmojis}
+                  onToggleFavorite={toggleFavorite}
+                  onEmojiClick={handleEmojiClick}
+                />
+              </div>
+            )}
+          </div>
 
           {/* Filter breadcrumb */}
           <div className="flex items-center gap-2 border-b border-border px-5 py-2">
@@ -237,10 +247,12 @@ export default function EmojiLibrary() {
           {/* Emoji Grid */}
           <EmojiGrid
             emojis={emojis}
-            favorites={favoriteNames}
+            favorites={favoriteIds}
             isLoading={isLoading}
             onToggleFavorite={toggleFavorite}
             onEmojiClick={handleEmojiClick}
+            loadEmojis={loadEmojis}
+            hasMore={hasMore}
           />
         </main>
       </div>

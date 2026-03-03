@@ -17,7 +17,7 @@ interface EmojiItemProps {
 export function EmojiItemCard({ emoji, isFavorite, onToggleFavorite, onEmojiClick }: EmojiItemProps) {
   const [copied, setCopied] = useState(false)
   const codepoint = emoji.codepoint;
-  const [url, setUrl] = useState<string | null>(null);
+  const [url, setUrl] = useState<string | undefined>(undefined);
   const [exists, setExists] = useState<boolean | null>(null);
 
   const handleClick = () => {
