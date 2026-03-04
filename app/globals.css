@@ -4,6 +4,7 @@
 @import "../styles/tokens/typography.css";
 @import "../styles/tokens/spacing.css";
 @import "../styles/tokens/radius.css";
+@import "../styles/tokens/animations.css";
 
 @custom-variant dark (&:is(.dark *));
 

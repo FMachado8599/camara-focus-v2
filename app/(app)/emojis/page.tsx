@@ -32,6 +32,7 @@ export default function EmojiLibrary() {
   const [hasMore, setHasMore] = useState(true)
   const [totalCount, setTotalCount] = useState(0)
   const cursorRef = useRef<string | null>(null)
+  const [lastBatchStart, setLastBatchStart] = useState(0)
 
   useEffect(() => {
     const initLoad = async () => {
@@ -60,7 +61,11 @@ export default function EmojiLibrary() {
 
       const { emojis: newEmojis, nextCursor, hasMore: more } = response
 
-      setEmojis(prev => reset ? newEmojis : [...prev, ...newEmojis])
+      setEmojis(prev => {
+        const startIndex = prev.length
+        setLastBatchStart(startIndex)
+        return [...prev, ...newEmojis]
+      })
       setAllEmojis(prev => reset ? newEmojis : [...prev, ...newEmojis])
 
       cursorRef.current = nextCursor // <-- actualizamos la ref
@@ -253,6 +258,7 @@ export default function EmojiLibrary() {
             onEmojiClick={handleEmojiClick}
             loadEmojis={loadEmojis}
             hasMore={hasMore}
+            lastBatchStart={lastBatchStart}
           />
         </main>
       </div>

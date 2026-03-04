@@ -90,7 +90,7 @@ export function EmojiItemCard({ emoji, isFavorite, onToggleFavorite, onEmojiClic
                 handleClick()
             }
             }}
-            className="group aspect-square relative flex flex-col items-center ..."
+            className="group aspect-square relative flex flex-col items-center justify-center"
             aria-label={`${emoji.name} - click to copy`}
         >
           <img src={url} alt={`emoji ${codepoint}`} style={{ width: 50, height: 50 }} />
