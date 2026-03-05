@@ -168,7 +168,7 @@ interface EmojiGridProps {
 }
 
 const GRID_CLASSES =
-  "grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8"
+  "grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 p-4"
 
 function LoadingState({ pageSize = 100 }: { pageSize?: number }) {
   return (
@@ -234,7 +234,7 @@ export default function EmojiGrid({
 
   return (
     <ScrollArea className="flex-1 min-h-0">
-      <div className="flex flex-col gap-6 p-4">
+      <div className="flex flex-col gap-6">
         {Object.entries(grouped).map(([key, groupEmojis]) => (
           <section key={key}>
             <h3 className="mb-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -244,15 +244,15 @@ export default function EmojiGrid({
             <div className={GRID_CLASSES}>
               {groupEmojis.map((emoji) => {
                 const globalIndex = emojis.findIndex(
-                  (e) => e.codepoint === emoji.codepoint
+                  (e) => e.id === emoji.id
                 )
 
                 const isNew = globalIndex >= lastBatchStart
-                const isFavorite = favorites.has(emoji.codepoint)
+                const isFavorite = favorites.has(emoji.id)
 
                 return (
                   <div
-                    key={emoji.codepoint}
+                    key={emoji.id}
                     className={`transition-opacity duration-500 ${
                       isNew ? "opacity-0 animate-fade-in" : "opacity-100"
                     }`}

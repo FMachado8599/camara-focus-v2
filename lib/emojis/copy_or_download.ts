@@ -1,9 +1,95 @@
+// //copy_or_download.ts
+
+// import { ref, getBlob } from "firebase/storage";
+// import { storage } from "@/services/firebase";
+
+// type CopyResult = {
+//   mode: "clipboard" | "download";
+// };
+
+// /* =========================
+//    Utils
+// ========================= */
+
+// function normalizeCodepointForAssets(codepoint: string): string {
+//   return codepoint
+//     .toLowerCase()
+//     .trim()
+//     .replace(/\s+/g, "-")
+//     .split("-")
+//     .map(part => part.replace(/^0+/, "") || "0")
+//     .join("-");
+// }
+
+// function buildPath(codepoint: string) {
+//   const normalized = normalizeCodepointForAssets(codepoint);
+//   return {
+//     normalized,
+//     path: `emojis/apple/${normalized}.png`,
+//   };
+// }
+
+// /* =========================
+//    Feature detection real
+// ========================= */
+
+// function canCopyImages() {
+//   return (
+//     typeof navigator !== "undefined" &&
+//     navigator.clipboard &&
+//     typeof navigator.clipboard.write === "function" &&
+//     typeof window.ClipboardItem !== "undefined"
+//   );
+// }
+
+// /* =========================
+//    Fallback descarga
+// ========================= */
+
+// export function downloadBlob(blob: Blob, filename: string = "emoji.png"): void {
+//   const url = URL.createObjectURL(blob);
+//   const a = document.createElement("a");
+//   a.href = url;
+//   a.download = filename;
+//   document.body.appendChild(a);
+//   a.click();
+//   a.remove();
+//   URL.revokeObjectURL(url);
+// }
+
+// /* =========================
+//    Copy OR Download
+// ========================= */
+
+// export async function copyOrDownloadEmoji(
+//   codepoint: string
+// ): Promise<CopyResult> {
+//   const normalized = normalizeCodepointForAssets(codepoint);
+//   const path = `emojis/apple/${normalized}.png`;
+
+//   const blob = await getBlob(ref(storage, path));
+
+//   // Si no se puede copiar → descarga
+//   if (!canCopyImages()) {
+//     downloadBlob(blob, `${normalized}.png`);
+//     return { mode: "download" };
+//   }
+
+//   try {
+//     await navigator.clipboard.write([
+//       new ClipboardItem({ [blob.type]: blob }),
+//     ]);
+
+//     return { mode: "clipboard" };
+//   } catch (err) {
+//     // Si falla el clipboard (Safari raro, permisos, etc)
+//     downloadBlob(blob, `${normalized}.png`);
+//     return { mode: "download" };
+//   }
+// }
+
 import { ref, getBlob } from "firebase/storage";
 import { storage } from "@/services/firebase";
-
-type CopyResult = {
-  mode: "clipboard" | "download";
-};
 
 /* =========================
    Utils
@@ -19,9 +105,13 @@ function normalizeCodepointForAssets(codepoint: string): string {
     .join("-");
 }
 
-/* =========================
-   Feature detection real
-========================= */
+function buildPath(codepoint: string) {
+  const normalized = normalizeCodepointForAssets(codepoint);
+  return {
+    normalized,
+    path: `emojis/apple/${normalized}.png`,
+  };
+}
 
 function canCopyImages() {
   return (
@@ -32,11 +122,7 @@ function canCopyImages() {
   );
 }
 
-/* =========================
-   Fallback descarga
-========================= */
-
-export function downloadBlob(blob: Blob, filename: string = "emoji.png"): void {
+function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -48,32 +134,37 @@ export function downloadBlob(blob: Blob, filename: string = "emoji.png"): void {
 }
 
 /* =========================
-   Copy OR Download
+   Public API
 ========================= */
 
-export async function copyOrDownloadEmoji(
-  codepoint: string
-): Promise<CopyResult> {
-  const normalized = normalizeCodepointForAssets(codepoint);
-  const path = `emojis/apple/${normalized}.png`;
-
+export async function copyEmoji(codepoint: string) {
+  const { normalized, path } = buildPath(codepoint);
   const blob = await getBlob(ref(storage, path));
 
-  // Si no se puede copiar → descarga
   if (!canCopyImages()) {
-    downloadBlob(blob, `${normalized}.png`);
-    return { mode: "download" };
+    throw new Error("Clipboard image not supported");
   }
 
-  try {
-    await navigator.clipboard.write([
-      new ClipboardItem({ [blob.type]: blob }),
-    ]);
+  await navigator.clipboard.write([
+    new ClipboardItem({ [blob.type]: blob }),
+  ]);
 
-    return { mode: "clipboard" };
-  } catch (err) {
-    // Si falla el clipboard (Safari raro, permisos, etc)
-    downloadBlob(blob, `${normalized}.png`);
-    return { mode: "download" };
+  return { mode: "clipboard" as const };
+}
+
+export async function downloadEmoji(codepoint: string) {
+  const { normalized, path } = buildPath(codepoint);
+  const blob = await getBlob(ref(storage, path));
+
+  downloadBlob(blob, `${normalized}.png`);
+
+  return { mode: "download" as const };
+}
+
+export async function copyOrDownloadEmoji(codepoint: string) {
+  try {
+    return await copyEmoji(codepoint);
+  } catch {
+    return await downloadEmoji(codepoint);
   }
 }

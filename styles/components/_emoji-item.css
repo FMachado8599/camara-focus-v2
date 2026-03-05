@@ -1,0 +1,11 @@
+.side_action-card{
+    height: 100%;
+}
+.emoji-card-container:hover{
+    background-color: var(--accent);
+    border-radius: var(--radius-md);
+}
+
+.side_action-card button{
+    width: 100%;
+}

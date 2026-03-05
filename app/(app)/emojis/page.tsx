@@ -61,10 +61,25 @@ export default function EmojiLibrary() {
 
       const { emojis: newEmojis, nextCursor, hasMore: more } = response
 
+      // setEmojis(prev => {
+      //   const startIndex = prev.length
+      //   setLastBatchStart(startIndex)
+      //   return [...prev, ...newEmojis]
+      // })
       setEmojis(prev => {
         const startIndex = prev.length
+
+        const map = new Map(prev.map(e => [e.id, e]))
+
+        newEmojis.forEach(e => {
+          map.set(e.id, e)
+        })
+
+        const merged = Array.from(map.values())
+
         setLastBatchStart(startIndex)
-        return [...prev, ...newEmojis]
+
+        return merged
       })
       setAllEmojis(prev => reset ? newEmojis : [...prev, ...newEmojis])
 

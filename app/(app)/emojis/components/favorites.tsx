@@ -1,14 +1,14 @@
 "use client"
 
 import { Star, Heart } from "lucide-react"
-import type { EmojiItem } from "@/lib/emojis/emoji-data"
+import type { Emoji } from "@/lib/emojis/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 interface FavoritesRowProps {
-  favorites: EmojiItem[]
-  onToggleFavorite: (emoji: EmojiItem) => void
-  onEmojiClick: (emoji: EmojiItem) => void
+  favorites: Emoji[]
+  onToggleFavorite: (emoji: Emoji) => void
+  onEmojiClick: (emoji: Emoji) => void
 }
 
 export function FavoritesRow({ favorites, onToggleFavorite, onEmojiClick }: FavoritesRowProps) {
@@ -39,7 +39,7 @@ export function FavoritesRow({ favorites, onToggleFavorite, onEmojiClick }: Favo
             {favorites.map((item) => (
               <Tooltip key={item.name}>
                 <TooltipTrigger asChild>
-                  <button
+                  <div
                     onClick={() => onEmojiClick(item)}
                     onContextMenu={(e) => {
                       e.preventDefault()
@@ -61,7 +61,7 @@ export function FavoritesRow({ favorites, onToggleFavorite, onEmojiClick }: Favo
                     >
                       <X className="h-2 w-2 text-muted-foreground" />
                     </button>
-                  </button>
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{item.name}</p>
