@@ -1,9 +1,12 @@
+//favorites.tsx
+
 "use client"
 
 import { Star, Heart } from "lucide-react"
 import type { Emoji } from "@/lib/emojis/types"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { EmojiItemCard } from "./emoji-item"
 
 interface FavoritesRowProps {
   favorites: Emoji[]
@@ -36,37 +39,14 @@ export function FavoritesRow({ favorites, onToggleFavorite, onEmojiClick }: Favo
       ) : (
         <ScrollArea className="w-full">
           <div className="flex gap-1 pb-2">
-            {favorites.map((item) => (
-              <Tooltip key={item.name}>
-                <TooltipTrigger asChild>
-                  <div
-                    onClick={() => onEmojiClick(item)}
-                    onContextMenu={(e) => {
-                      e.preventDefault()
-                      onToggleFavorite(item)
-                    }}
-                    className="group relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary transition-all hover:bg-accent hover:scale-110"
-                    aria-label={item.name}
-                  >
-                    <span className="text-xl leading-none" role="img" aria-label={item.name}>
-                      {item.emoji}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onToggleFavorite(item)
-                      }}
-                      className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-card opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label={`Remove ${item.name} from favorites`}
-                    >
-                      <X className="h-2 w-2 text-muted-foreground" />
-                    </button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{item.name}</p>
-                </TooltipContent>
-              </Tooltip>
+            {favorites.map((emoji) => (
+              <EmojiItemCard
+                key={emoji.codepoint}
+                emoji={emoji}
+                isFavorite={true}
+                onToggleFavorite={onToggleFavorite}
+                onEmojiClick={onEmojiClick}
+              />
             ))}
           </div>
           <ScrollBar orientation="horizontal" />

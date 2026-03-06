@@ -15,14 +15,14 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Copy, Smile } from "lucide-react"
 import { fetchEmojis } from "@/lib/emojis/fetch"
-import { getEmojiPlaceholderUrl } from "@/lib/emojis/placeholders"
+import { fetchEmojiSearch } from "@/services/emojis/fetchEmojiSearch"
 import { useToast } from "@/context/ToastContext" 
 
 export default function EmojiLibrary() {
   const [query, setQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<string | null>("people_and_body")
   const [activeSubgroup, setActiveSubgroup] = useState<string | null>(null)
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set())
+  const [favoriteEmojis, setFavoriteEmojis] = useState<Emoji[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [lastCopied, setLastCopied] = useState<string | null>(null)
   const [emojis, setEmojis] = useState<Emoji[]>([])
@@ -30,7 +30,6 @@ export default function EmojiLibrary() {
   const [allEmojis, setAllEmojis] = useState<Emoji[]>([])
   const [cursor, setCursor] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
-  const [totalCount, setTotalCount] = useState(0)
   const cursorRef = useRef<string | null>(null)
   const [lastBatchStart, setLastBatchStart] = useState(0)
 
@@ -52,52 +51,48 @@ export default function EmojiLibrary() {
     setIsLoading(true)
 
     try {
-      const response = await fetchEmojis({
-        category: activeCategory,
-        search: query,
-        cursor: reset ? null : cursorRef.current, // <-- aquí usamos la ref
-        limit: 100,
-      })
+      let response;
+      if (query && query.trim() !== "") {
+        // búsqueda por palabra
+        response = await fetchEmojiSearch({
+          search: query,
+          category: activeCategory,
+          cursor: reset ? null : cursorRef.current,
+          limit: 100,
+        })
+      } else {
+        // carga normal
+        response = await fetchEmojis({
+          category: activeCategory,
+          cursor: reset ? null : cursorRef.current,
+          limit: 100,
+        })
+      }
 
       const { emojis: newEmojis, nextCursor, hasMore: more } = response
 
-      // setEmojis(prev => {
-      //   const startIndex = prev.length
-      //   setLastBatchStart(startIndex)
-      //   return [...prev, ...newEmojis]
-      // })
       setEmojis(prev => {
-        const startIndex = prev.length
-
         const map = new Map(prev.map(e => [e.id, e]))
-
-        newEmojis.forEach(e => {
-          map.set(e.id, e)
-        })
-
-        const merged = Array.from(map.values())
-
-        setLastBatchStart(startIndex)
-
-        return merged
+        newEmojis.forEach(e => map.set(e.id, e))
+        return Array.from(map.values())
       })
       setAllEmojis(prev => reset ? newEmojis : [...prev, ...newEmojis])
-
-      cursorRef.current = nextCursor // <-- actualizamos la ref
+      cursorRef.current = nextCursor
       setHasMore(more)
+
     } catch (err) {
       console.error(err)
     } finally {
       setIsLoading(false)
     }
-  }, [activeCategory, query, isLoading, hasMore])
+  }, [query, activeCategory, isLoading, hasMore])
 
   // Load favorites from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem("emoji-favorites")
       if (stored) {
-        setFavoriteIds(new Set(JSON.parse(stored)))
+        setFavoriteEmojis(JSON.parse(stored))
       }
     } catch {}
   }, [])
@@ -107,22 +102,20 @@ export default function EmojiLibrary() {
     try {
       localStorage.setItem(
         "emoji-favorites",
-        JSON.stringify(Array.from(favoriteIds))
+        JSON.stringify(favoriteEmojis)
       )
     } catch {}
-  }, [favoriteIds])
+  }, [favoriteEmojis])
 
   const toggleFavorite = useCallback((emoji: Emoji) => {
-    setFavoriteIds((prev) => {
-      const next = new Set(prev)
+    setFavoriteEmojis(prev => {
+      const exists = prev.find(e => e.codepoint === emoji.codepoint)
 
-      if (next.has(emoji.codepoint)) {
-        next.delete(emoji.codepoint)
-      } else {
-        next.add(emoji.codepoint)
+      if (exists) {
+        return prev.filter(e => e.codepoint !== emoji.codepoint)
       }
 
-      return next
+      return [...prev, emoji]
     })
   }, [])
 
@@ -144,8 +137,8 @@ export default function EmojiLibrary() {
 
   const activeCount = emojis.length
   const activeCategoryObj = categories.find((c) => c.id === activeCategory)
-  const favoriteEmojis = allEmojis.filter((emoji) =>
-    favoriteIds.has(emoji.codepoint)
+  const favoriteSet = new Set(
+    favoriteEmojis.map(e => e.codepoint)
   )
 
   return (
@@ -267,7 +260,7 @@ export default function EmojiLibrary() {
           {/* Emoji Grid */}
           <EmojiGrid
             emojis={emojis}
-            favorites={favoriteIds}
+            favorites={favoriteSet}
             isLoading={isLoading}
             onToggleFavorite={toggleFavorite}
             onEmojiClick={handleEmojiClick}

@@ -1,7 +1,7 @@
 
 "use client"
 
-import { Star, Check, Download } from "lucide-react"
+import { Star, Check, Download, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState, useEffect, useRef } from "react"
@@ -30,9 +30,17 @@ export function EmojiItemCard({
   const codepoint = emoji.codepoint
   const [url, setUrl] = useState<string | undefined>(undefined)
   const [exists, setExists] = useState<boolean | null>(null)
+  const [downloading, setDownloading] = useState(false)
 
-  async function handleDownload(emoji: Emoji) {
-    await downloadEmoji(emoji.codepoint)
+  async function handleDownload() {
+      if (downloading) return
+
+      try {
+        setDownloading(true)
+        await downloadEmoji(emoji.codepoint)
+      } finally {
+        setDownloading(false)
+      }
   }
 
   const handleClick = () => {
@@ -145,59 +153,66 @@ export function EmojiItemCard({
         )}
       </div>
 
-      {/* SIDE ACTION CARD */}
-      <div
-        className={cn(
-          "absolute inset-0 grid grid-rows-2 grid-cols-2 gap-1 p-1 rounded-xl bg-background/90 backdrop-blur-sm transition-opacity duration-200",
-          open ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-      >
-        {/* COPY (ocupa fila completa arriba) */}
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation()
-            handleClick()
-          }}
-          className={cn(actionBtn, "col-span-2")}
-        >
-          Copy
-        </Button>
 
-        {/* FAVORITE */}
-        <Button
-          variant="secondary"
-          size="icon"
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleFavorite(emoji)
-          }}
-          className={favoriteBtn}
-        >
-          <Star
+      {downloading ? (
+          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-background/90 backdrop-blur-sm">
+            <Loader2 className="h-5 w-5 animate-spin" />
+          </div>
+        ) : (
+          <div
             className={cn(
-              "h-4 w-4 transition-transform duration-200",
-              isFavorite
-                ? "fill-yellow-400 text-yellow-400 scale-110"
-                : "text-muted-foreground"
+              "absolute inset-0 grid grid-rows-2 grid-cols-2 gap-1 p-1 rounded-xl bg-background/90 backdrop-blur-sm transition-opacity duration-200",
+              open ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
-          />
-        </Button>
+          >
+            {/* COPY (ocupa fila completa arriba) */}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleClick()
+              }}
+              className={cn(actionBtn, "col-span-2")}
+            >
+              Copy
+            </Button>
 
-        {/* DOWNLOAD */}
-        <Button
-          variant="secondary"
-          size="icon"
-          onClick={(e) => {
-            e.stopPropagation()
-            handleDownload(emoji)
-          }}
-          className={cn(actionBtn, "w-full h-full ")}
-        >
-          <Download className="h-4 w-4" />
-        </Button>
-      </div>
+            {/* FAVORITE */}
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggleFavorite(emoji)
+              }}
+              className={favoriteBtn}
+            >
+              <Star
+                className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  isFavorite
+                    ? "fill-yellow-400 text-yellow-400 scale-110"
+                    : "text-muted-foreground"
+                )}
+              />
+            </Button>
+
+            {/* DOWNLOAD */}
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleDownload()
+              }}
+              className={cn(actionBtn, "w-full h-full ")}
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
+      )}
+
     </div>
   )
 }
